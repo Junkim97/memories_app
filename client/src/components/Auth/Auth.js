@@ -6,12 +6,16 @@ import {useHistory} from 'react-router-dom'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import useStyles from './styles';
 import Input from './Input';
-import Icon from './icon'
+import Icon from './icon';
+import {signin, signup} from '../../actions/auth';
+
+const initialState = {firstName: '', lastName: '', email: '', password: '', confirmPassword: ''};
 
 const Auth = () => {
   const classes = useStyles();
   const [showPassword, setShowPassword] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
+  const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -23,12 +27,17 @@ const Auth = () => {
   }
 
 
-  const handleSubmit = () => {
-
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if(isSignup) {
+      dispatch(signup(formData, history));
+    } else {
+      dispatch(signin(formData, history));
+    }
   };
 
-  const handleChange = () => {
-
+  const handleChange = (e) => {
+    setFormData({... formData, [e.target.name]: e.target.value});
   };
 
   const googleSuccess = async (res) => {
@@ -73,6 +82,7 @@ const Auth = () => {
           <Button type='submit' fullWidth variant='contained' color='primary' className={classes.submit}>
             {isSignup ? 'Sign Up' : 'Sign In'}
           </Button>
+          
           <GoogleLogin 
               clientId='570121043167-9ir5kl4hn03nkb2fq8a42pjm78h5h0jl.apps.googleusercontent.com'
               render={(renderProps) => (
